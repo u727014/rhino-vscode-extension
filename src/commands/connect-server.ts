@@ -124,19 +124,30 @@ export class ConnectServerCommand extends Command {
         });
     }
 
-    private getMetadata(client: RhinoClient, context: vscode.ExtensionContext, plugins: any, configurationId: string, callback: any) {
-        // client.getLocators((locators: any) => {
-            client.getAttributes((attributes: any) => {
+///
+    public async getAsyncMetadata(client: RhinoClient, context: vscode.ExtensionContext): Promise<string[] | undefined> {
+        return await client.getAttributes().then((attributes) => {
+            if (typeof attributes === 'string') {
+                let _attributes: string[] = JSON.parse(attributes);
+                new ActionsAutoCompleteProvider().setAttributes(_attributes).register(context);
+                return _attributes;
+            }
+        });
+    }
+///
+    private async getMetadata(client: RhinoClient, context: vscode.ExtensionContext, plugins: any, configurationId: string, callback: any) {
+            // client.getLocators((locators: any) => {
+            // return await client.getAttributes((attributes: any) => {
                 // client.getAnnotations((annotations: any) => {
                     let actionsManifests = JSON.parse(plugins);
                     // let _locators = JSON.parse(locators);
-                    let _attributes = JSON.parse(attributes);
+                    // let _attributes = JSON.parse(attributes);
                     // let _annotations = JSON.parse(annotations);
                     let pluginsPattern = Utilities.getPluginsPattern(actionsManifests);
 
                     new ActionsAutoCompleteProvider()
                         .setPattern(pluginsPattern)
-                        .setAttributes(_attributes)
+                        // .setAttributes(_attributes)
                         .setManifests(actionsManifests)
                         // .setLocators(_locators)
                         // .setAnnotations(_annotations)
@@ -157,7 +168,8 @@ export class ConnectServerCommand extends Command {
                             callback(client, context);
                         });
                     }
-                });
+                    this.getAsyncMetadata(client, context);
+                // });
             // });
         // });
     }

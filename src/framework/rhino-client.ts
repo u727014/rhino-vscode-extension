@@ -274,13 +274,27 @@ export class RhinoClient {
      * 
      * @param callback An argument, which is then invoked inside the outer function to complete some kind of routine or action.
      */
-    public getAttributes(callback: any) {
+    // public getAttributes(callback: any) {
+    //     // setup
+    //     let httpCommand = new HttpCommand();
+    //     httpCommand.command = '/api/v3/meta/attributes';
+
+    //     // get
+    //     this.httpClient.invokeWebRequest(httpCommand, callback);
+    // }
+
+    /**
+     * Summary. Returns a collection of available element special attributes.
+     * 
+     * use with async-await
+     */
+    public async getAttributes() {
         // setup
         let httpCommand = new HttpCommand();
         httpCommand.command = '/api/v3/meta/attributes';
 
         // get
-        this.httpClient.invokeWebRequest(httpCommand, callback);
+        return await this.httpClient.invokeAsyncWebRequest(httpCommand);
     }
 
     /**
