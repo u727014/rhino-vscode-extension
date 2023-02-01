@@ -282,7 +282,6 @@ export class RhinoClient {
     //     // get
     //     this.httpClient.invokeWebRequest(httpCommand, callback);
     // }
-
     /**
      * Summary. Returns a collection of available element special attributes.
      * 
@@ -296,7 +295,6 @@ export class RhinoClient {
         // get
         return await this.httpClient.invokeAsyncWebRequest(httpCommand);
     }
-
     /**
      * Summary. Returns a single available Plugin (both Rhino and Code).
      * 

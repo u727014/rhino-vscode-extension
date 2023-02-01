@@ -156,6 +156,8 @@ export class ConnectServerCommand extends Command {
                     console.info('Get-Plugins -Type Actions = (OK, ' + actionsManifests.length + ')');
                     let message = '$(testing-passed-icon) Total of ' + actionsManifests.length + ' action(s) loaded';
                     vscode.window.setStatusBarMessage(message);
+                   
+                    this.getAsyncMetadata(client, context);
 
                     if (callback === null) {
                         return;
@@ -168,7 +170,6 @@ export class ConnectServerCommand extends Command {
                             callback(client, context);
                         });
                     }
-                    this.getAsyncMetadata(client, context);
                 // });
             // });
         // });
