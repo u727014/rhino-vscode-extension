@@ -38,7 +38,7 @@ export class RegisterPluginsCommand extends Command {
     public register(): any {
         // setup
         let command = vscode.commands.registerCommand(this.getCommandName(), () => {
-            this.invoke(undefined);
+            this.invoke();
         });
 
         // set
@@ -48,11 +48,11 @@ export class RegisterPluginsCommand extends Command {
     /**
      * Summary. Implement the command invoke pipeline.
      */
-    public invokeCommand(callback: any) {
-        this.invoke(callback);
+    public invokeCommand() {
+        this.invoke();
     }
 
-    private invoke(callback: any) {
+    private invoke() {
         // notification
         vscode.window.setStatusBarMessage('$(sync~spin) Registering plugin(s)...');
         
@@ -81,7 +81,7 @@ export class RegisterPluginsCommand extends Command {
                 .map(i => i.replace(/^\d+\.\s+/, ''))
                 .join('\n');
 
-            this.registerPlugins(createModel, callback);
+            this.registerPlugins(createModel);
         });
     }
 
@@ -100,8 +100,8 @@ export class RegisterPluginsCommand extends Command {
         return '';
     }
 
-    private registerPlugins(createModel: string, callback: any) {
-        this.getRhinoClient().createPlugins(createModel, (response: any) => {
+    private registerPlugins(createModel: string) {
+        this.getRhinoClient().createPlugins(createModel).then((response: any) => {
             // setup
             let total = response.toString().split('>>>').length;
 
@@ -111,10 +111,10 @@ export class RegisterPluginsCommand extends Command {
             // register
             new ConnectServerCommand(this.getContext()).invokeCommand();
 
-            // callback
-            if (callback !== undefined) {
-                callback();
-            }
+            // // callback
+            // if (callback !== undefined) {
+            //     callback();
+            // }
         });
     }
 }

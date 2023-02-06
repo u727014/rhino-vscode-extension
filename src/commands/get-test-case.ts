@@ -30,7 +30,7 @@ export class GetTestCaseCommand extends Command {
     public register(): any {
         // build
         let command = vscode.commands.registerCommand(this.getCommandName(), () => {
-            this.invoke(undefined);
+            this.invoke();
         });
 
         // set
@@ -40,11 +40,11 @@ export class GetTestCaseCommand extends Command {
     /**
      * Summary. Implement the command invoke pipeline.
      */
-    public invokeCommand(callback: any) {
-        this.invoke(callback);
+    public invokeCommand() {
+        this.invoke();
     }
 
-    private invoke(callback: any) {
+    private invoke() {
         // setup
         let client = this.getRhinoClient();
         let configuration = this.getConfiguration();
@@ -64,7 +64,7 @@ export class GetTestCaseCommand extends Command {
             vscode.window.setStatusBarMessage('$(sync~spin) Loading Test Case ' + request.entity + '...');
 
             // get
-            client.getTestCase(request, (response: any) => {
+            client.getTestCase(request).then((response: any) => {
                 let range = this.getDocumentRange();
                 vscode.window.activeTextEditor?.edit((i) => {
                     i.replace(range, response);
@@ -74,9 +74,9 @@ export class GetTestCaseCommand extends Command {
                     let message = '$(testing-passed-icon) Test Case ' + request.entity + ' loaded';
                     vscode.window.setStatusBarMessage(message);
 
-                    if (callback !== undefined) {
-                        callback();
-                    }
+                    // if (callback !== undefined) {
+                    //     callback();
+                    // }
                 });
             });
         });

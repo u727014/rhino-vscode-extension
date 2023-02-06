@@ -80,7 +80,7 @@ export class RhinoDocumentSymbolProvider extends Provider implements vscode.Docu
             }
 
             // resolve
-            this.client.getSymbols(input, (data: string) => {
+            this.client.getSymbols(input).then((data:any) => {
                 let symbols = JSON.parse(data);
                 let documentSymbols = get(symbols);
 

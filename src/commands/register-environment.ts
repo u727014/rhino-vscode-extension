@@ -7,6 +7,7 @@ import * as vscode from 'vscode';
 import path = require('path');
 import { Utilities } from '../extensions/utilities';
 import { Command } from "./command";
+import { RhinoClient } from '../framework/rhino-client';
 
 
 export class RegisterEnvironmentCommand extends Command {
@@ -33,7 +34,7 @@ export class RegisterEnvironmentCommand extends Command {
     public register(): any {
         // build
         let command = vscode.commands.registerCommand(this.getCommandName(), () => {
-            this.invoke(undefined);
+            this.invoke();
         });
 
         // set
@@ -43,8 +44,8 @@ export class RegisterEnvironmentCommand extends Command {
     /**
      * Summary. Implement the command invoke pipeline.
      */
-    public invokeCommand(callback: any) {
-        this.invoke(callback);
+    public invokeCommand() {
+        this.invoke();
     }
     isFunction(functionToCheck: any): boolean {
         // Possibly won't work for async functions - needs further testing
@@ -52,15 +53,14 @@ export class RegisterEnvironmentCommand extends Command {
 
         // return functionToCheck instanceof Function;
     }
-    private invoke(callback: any) {
+    private async invoke(){
         // setup
         let client = this.getRhinoClient();
         let options = {
             placeHolder: 'Environment file name w/o extension (e.g., Production)'
         };
-
         vscode.window.showInputBox(options).then((value) => {
-            RegisterEnvironmentCommand.getEnvironments(value, (requests:JSON[]) =>{
+            RegisterEnvironmentCommand.getEnvironments(value, async (requests:JSON[]) => {
 
                 // setup
                 let mergedJson:JSON = requests[0];
@@ -78,18 +78,33 @@ export class RegisterEnvironmentCommand extends Command {
 
                 // user interface
                 vscode.window.setStatusBarMessage('$(sync~spin) Registering environment...');
-
                 // get
-                client.addEnvironment(mergedJson, () => {
-                    client.syncEnvironment((response: any) => {
-                        vscode.window.setStatusBarMessage('$(testing-passed-icon) Environment registered');
-                        if(this.isFunction(callback)){
-                            callback(response);
-                        }
-                    });
-                }); 
+                return await client.addEnvironment(mergedJson);
+                return await client.syncEnvironment();
+                vscode.window.setStatusBarMessage('$(testing-passed-icon) Environment registered');
+
+                // client.addEnvironment(mergedJson, () => {
+                    // client.syncEnvironment((response: any) => {
+                    //     vscode.window.setStatusBarMessage('$(testing-passed-icon) Environment registered');
+                        // if(this.isFunction(callback)){
+                        //     callback(response);
+                        // }
+            //         });
+                // }); 
             }); 
         });
+    }
+
+
+    public async getLocatorsMetadata(client: RhinoClient, locators: any, ): Promise<string[] | undefined> {
+        return await client.addEnvironment(locators).then((mergedJson) => {
+            if (typeof mergedJson === 'string') {
+                let _locators: string[] = JSON.parse(locators);
+                let functions = [];
+                functions.push(..._locators.map((i: any) => '(?<=\\{)' + i.literal + '(?=})'));
+                return _locators;
+            }
+        }); 
     }
 
     private static getEnvironments(environment: string | undefined, callback: any) {
@@ -127,7 +142,7 @@ export class RegisterEnvironmentCommand extends Command {
                     return;
                 }
             }
-            callback(requests);
+            // callback(requests);
         });
     }
 }

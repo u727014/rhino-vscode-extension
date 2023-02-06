@@ -1,16 +1,17 @@
 # Rhino API - Language & Integration Extension
+
 19/07/2021 - 45 minutes to read
 
 > Information
 >
 > You can create a free Rhino Account on: https://g-api.azurewebsites.net/identity/account/register.
-
 > Important
 >
 > **We support open source** if you have an open source project, you can gain an unlimited FREE access to Rhino.
 > Please send your open source project URL to rhino.api@gmail.com and your Rhino user name to get a sponsored account.
 
 ## In This Article
+
 * [Commands](#commands)
 * Connect to Rhino Server
 * [Create a New Project](#create-project)
@@ -20,6 +21,7 @@
 * Format Document
 
 ### [Basics](#basics)
+
 - [Rhino API - Language & Integration Extension](#rhino-api---language--integration-extension)
   - [In This Article](#in-this-article)
     - [Basics](#basics)
@@ -34,6 +36,7 @@
   - [See Also](#see-also)
 
 ### Advanced
+
 * [Deploy Rhino Server](https://github.com/savanna-projects/rhino-agent/blob/master/docs/pages/GettingStarted/Deployment.md)
 * Manifest in Depth
 
@@ -42,11 +45,13 @@ Rhino as an open source [W3C Web Driver](https://www.w3.org/TR/webdriver/) based
 > Rhino is a full W3C Web Driver compliant which means it can connect out of the box to any other Web Driver either locally, cloud or remote.
 
 ## Commands
+
 You can activate the command panel when pressing `CTRL+SHIFT+P` keys combination. This will open the **Command Palette** from which you select and run extensions commands.  
 
 Once the **Command Palette** is open, type `Rhino:` into the **Command Palette** text-box to filter out Rhino only commands.
 
 ### Create-Project
+
 The `Create-Project` command opens the `Select Folder` dialog, from which you can select the folder to create Rhino Project under.  
 
 Upon creating a project, the following folders and files will be created:
@@ -57,7 +62,9 @@ Upon creating a project, the following folders and files will be created:
 5. `manifest.json`, default project manifest.
 
 ## Basics
+
 ### Create New Project
+
 When you first open Visual Studio Code, the start window appears, and from there, you can run the ```Create a new project``` command.  
 
 1. Launch VS Code.
@@ -75,6 +82,7 @@ When you first open Visual Studio Code, the start window appears, and from there
 > Rhino Project contains several default folders for the different Rhino components and a ```Manifest.json``` file.
 
 ### Manifest Overview
+
 Every project has a JSON-formatted manifest file, named ```manifest.json```, that provides important information. The following code shows the supported manifest fields for Rhino Project.
 
 > Tip
@@ -114,6 +122,7 @@ Every project has a JSON-formatted manifest file, named ```manifest.json```, tha
 |driverParameters      |array |A collection of driver names their location.                                                              |
 
 ### Create Your First Test Using Test Snippet
+
 The easiest way to create a spec file, is to use the built in snippet. Please follow these steps to create your first spec file:  
 
 1. Right click on ```TestCases``` folder.
@@ -146,6 +155,7 @@ The easiest way to create a spec file, is to use the built in snippet. Please fo
 ![image 2.6](https://raw.githubusercontent.com/savanna-projects/rhino-vscode-extension/master/images/create_test_7.png "Rhino Snippet")
 
 ### Run Your Test
+
 Rhino can run the test spec directly from the VS Code document, by executing the invoke command. Please follow these steps to run your test:  
 
 1. Open command palette by pressing ```CRTL+SHIFT+P```.
@@ -155,12 +165,14 @@ Rhino can run the test spec directly from the VS Code document, by executing the
 
 ![image 3.1](https://raw.githubusercontent.com/savanna-projects/rhino-vscode-extension/master/images/run_test_1.png "Command Palette")  
 
-5. When test is complete, open your browser and navigate to http://localhost:9000/reports.
+5. When test is complete, open your browser and navigate to <http://localhost:9000/reports>.
+
 6. Select your run from the runs list to see your run report.  
 
 ![image 3.1](https://raw.githubusercontent.com/savanna-projects/rhino-vscode-extension/master/images/run_test_2.png "Rhino Report")
 
 ## See Also
+
 * [Rhino Agent - Documentation](https://github.com/savanna-projects/rhino-agent/blob/master/docs/pages/Home.md)
 * [Deploy Rhino Server - As Process](https://github.com/savanna-projects/rhino-agent/blob/master/docs/pages/GettingStarted/Deployment.md)
 * [Rhino - Configuration](https://github.com/savanna-projects/rhino-agent/blob/master/docs/pages/ApiReference/Configurations.md#get-configuration)

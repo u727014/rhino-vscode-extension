@@ -96,16 +96,24 @@ export class RegisterModelsCommand extends Command {
         });
     }
 
-    private registerModels(createModel: any[], callback: any) {
+    // private registerModels(createModel: any[], callback: any) {
+    //     // setup
+    //     let client = this.getRhinoClient();
+
+    //     // clean and register
+    //     client.deleteModels().then(() => {
+    //         this.createModels(createModel, callback);
+    //     });
+    // }
+    private async registerModels(createModel: any[], callback: any) {
         // setup
         let client = this.getRhinoClient();
 
         // clean and register
-        client.deleteModels(() => {
+        return await client.deleteModels().then(() => {
             this.createModels(createModel, callback);
         });
     }
-
     private createModels(createModel: any[], callback: any) {
         // setup
         let client = this.getRhinoClient();
@@ -131,18 +139,18 @@ export class RegisterModelsCommand extends Command {
 
         // factory
         if (isJson && !isMarkdown) {
-            client.createModels(jsModels, () => {
+            client.createModels(jsModels).then(() => {
                 _callback(this.getContext(), callback);
             });
         }
         if (isMarkdown && !isJson) {
-            client.createModelsMd(mdModels, () => {
+            client.createModelsMd(mdModels).then(() => {
                 _callback(this.getContext(), callback);
             });
         }
         if (isMarkdown && isJson) {
-            client.createModels(jsModels, () => {
-                client.createModelsMd(mdModels, () => {
+            client.createModels(jsModels).then(() => {
+                client.createModelsMd(mdModels).then(() => {
                     _callback(this.getContext(), callback);
                 });
             });

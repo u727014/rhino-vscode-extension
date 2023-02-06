@@ -12,6 +12,7 @@ import * as vscode from 'vscode';
 import { Utilities } from "../extensions/utilities";
 import { RhinoClient } from "../framework/rhino-client";
 import { LogMessage } from "../logging/log-models";
+import { ActionsAutoCompleteProvider } from "../providers/actions-auto-complete-provider";
 
 export class CreateTm extends Command {
     // private rhinoClient: RhinoClient;
@@ -57,7 +58,7 @@ export class CreateTm extends Command {
         this.invoke();
     }
 
-    private invoke() {
+    private async invoke() {
         // notification
         vscode.window.setStatusBarMessage('$(sync~spin) Creating TM Language...');
 
@@ -68,15 +69,15 @@ export class CreateTm extends Command {
         let configuration = Utilities.getConfigurationByManifest();
 
         // build
-        client.createConfiguration(configuration, (data: any) => {
+        client.createConfiguration(configuration).then(async (data: any) => {
             let response = JSON.parse(data);
             let configurationId = Utilities.isNullOrUndefined(response) || Utilities.isNullOrUndefined(response.id)
                 ? ''
                 : response.id;
-            client.getPluginsByConfiguration(configurationId, (plugins: any) => {
+            return await client.getPluginsByConfiguration(configurationId).then(async (plugins: any) => {
                 let hasNoPlugins = Utilities.isNullOrUndefined(plugins) || plugins === '';
                 if (hasNoPlugins) {
-                    client.getPlugins((plugins: any) => {
+                    return await client.getPlugins().then((plugins) => {
                         this.getMetadata(client, plugins, '');
                     });
                 }
@@ -86,39 +87,76 @@ export class CreateTm extends Command {
             });
         });
     }
-///
-    // public async getOperators(): Promise<string[] | undefined> {
-    //     return await this.rhinoClient.getServerLogs().then((result) => {
-    //         if (typeof result === 'string') {
-    //             let logNames: string[] = JSON.parse(result);
-    //             return logNames;
-    //         }
-    //     });
-    // }
+    public async getOperatorsMetadata(client: RhinoClient): Promise<string[] | undefined> {
+        return await client.getLocators().then((operators) => {
+            if (typeof operators === 'string') {
+                let _operators: string[] = JSON.parse(operators);
+                let keywordControl = [];
+                keywordControl.push(..._operators.map((i: any) => '\\s+' + i.literal + '\\s+'));
+                return _operators;
+            }
+        }); 
+    }
+
+    public async getVerbsMetadata(client: RhinoClient): Promise<string[] | undefined> {
+        return await client.getLocators().then((verbs) => {
+            if (typeof verbs === 'string') {
+                let _verbs: string[] = JSON.parse(verbs);
+                let keywordControl = [];
+                keywordControl.push(..._verbs.map((i: any) => '\\s+' + i.literal + '\\s+'));
+                return _verbs;
+            }
+        }); 
+    }
+public async getLocatorsMetadata(client: RhinoClient): Promise<string[] | undefined> {
+    return await client.getLocators().then((locators) => {
+        if (typeof locators === 'string') {
+            let _locators: string[] = JSON.parse(locators);
+            let functions = [];
+            functions.push(..._locators.map((i: any) => '(?<=\\{)' + i.literal + '(?=})'));
+            return _locators;
+        }
+    }); 
+}
+public async getAssertionsMetadata(client: RhinoClient): Promise<string[] | undefined> {
+    return await client.getAssertions().then((assertions) => {
+        if (typeof assertions === 'string') {
+            let _assertions: string[] = JSON.parse(assertions);
+            let functions = [];
+            functions.push(..._assertions.map((i: any) => '(?<=\\{)' + i.literal + '(?=})'));
+            return _assertions;
+        }
+    }); 
+}
 ///
     private getMetadata(client: RhinoClient, plugins: any, configurationId: string) {
-        client.getOperators((operators: any) => {
-            client.getVerbs((verbs: any) => {
-                client.getAssertions((assertions: any) => {
-                    client.getLocators((locators: any) => {
+        // client.getOperators((operators: any) => {
+            // client.getVerbs((verbs: any) => {
+                // client.getAssertions((assertions: any) => {
+                    // client.getLocators((locators: any) => {
                         // client.getAnnotations((annotations: any) => {
+                            this.getOperatorsMetadata(client);
+                            this.getVerbsMetadata(client);
+                            this.getAssertionsMetadata(client);
+                            this.getLocatorsMetadata(client);
+
                             const _plugins = JSON.parse(plugins);
-                            const _operators = JSON.parse(operators);
-                            const _verbs = JSON.parse(verbs);
-                            const _assertions = JSON.parse(assertions);
-                            const _locators = JSON.parse(locators);
+                            // const _operators = JSON.parse(operators);
+                            // const _verbs = JSON.parse(verbs);
+                            // const _assertions = JSON.parse(assertions);
+                            // const _locators = JSON.parse(locators);
                             // const _annotations = JSON.parse(annotations).map((i: any) => i.key.trim());
 
                             // build
                             let nameClass = _plugins.map((i: any) => i.literal);
 
-                            let keywordControl = [];
-                            keywordControl.push(..._operators.map((i: any) => '\\s+' + i.literal + '\\s+'));
-                            keywordControl.push(..._verbs.map((i: any) => '\\s+' + i.literal + '\\s+'));
+                            // let keywordControl = [];
+                            // keywordControl.push(..._operators.map((i: any) => '\\s+' + i.literal + '\\s+'));
+                            // keywordControl.push(..._verbs.map((i: any) => '\\s+' + i.literal + '\\s+'));
 
-                            let functions = [];
-                            functions.push(..._assertions.map((i: any) => '(?<=\\{)' + i.literal + '(?=})'));
-                            functions.push(..._locators.map((i: any) => '(?<=\\{)' + i.literal + '(?=})'));
+                            // let functions = [];
+                            // functions.push(..._assertions.map((i: any) => '(?<=\\{)' + i.literal + '(?=})'));
+                            // functions.push(..._locators.map((i: any) => '(?<=\\{)' + i.literal + '(?=})'));
 
                             // create
                             // let tmLanguage = this.getTmConfiguration(nameClass, keywordControl, functions, _annotations);
@@ -127,12 +165,12 @@ export class CreateTm extends Command {
 
                             // cleanup
                             if (configurationId !== null && configurationId !== '') {
-                                client.deleteConfiguration(configurationId, null);
+                                client.deleteConfiguration(configurationId);
                             }
-                        });
-                    });
-                });
-            });
+                        // });
+                    // });
+                // });
+            // });
         // });
     }
 
