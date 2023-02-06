@@ -72,9 +72,10 @@ export class ConnectServerCommand extends Command {
         // build
         try {
             await this.registerActions(client, context);
+            let annotations = this.registerAnnotations(client, context);
             await this.registerAssertionsAsync(context);
             await this.registerMacrosAsync(client, context);
-            await this.registerDataDrivenSnippetAsync(client, context);
+            await this.registerDataDrivenSnippetAsync(context, annotations);
             await this.registerModelsAsync(client, context);
             new CreateTm(context).invokeCommand();
 
@@ -95,28 +96,6 @@ export class ConnectServerCommand extends Command {
             console.error(error);
             vscode.window.setStatusBarMessage("$(testing-error-icon) Errors occurred connecting to Rhino Server");
         }
-
-        // // TODO: optimize calls to run in parallel and create TM when all complete
-        // // build
-        // try {
-        //     this.registerActions(client, context, (client: any, context: any) => {
-        //         // this.registerAnnotations(client, context, (client: any, context: any) => {
-        //             this.registerAssertions(client, context, (client: any, context: any) => {
-        //                 this.registerMacros(client, context, (client: any, context: any) => {
-        //                     this.registerDataDrivenSnippet(client, context, (client: any, context: any) => {
-        //                         this.registerModels(client, context, () => {
-        //                             new CreateTm(context).invokeCommand();
-        //                         });
-        //                     });
-        //                 });
-        //             });
-        //         // });
-        //     });
-        // } catch (error) {
-        //     console.error(error);
-        //     vscode.window.setStatusBarMessage("$(testing-error-icon) Errors occurred connecting to Rhino Server");
-        // }
-
     }
 
     private async registerActions(client: RhinoClient, context: vscode.ExtensionContext) {
@@ -221,23 +200,18 @@ export class ConnectServerCommand extends Command {
         vscode.window.setStatusBarMessage('$(sync~spin) Loading annotations(s)...');
         console.log(`${new Date().getTime()} - Start loading annotations`);
 
-        // // build
-        // client.getAnnotations((annotations: any) => {
-        //     let manifests = JSON.parse(annotations);
-        //     new AnnotationsAutoCompleteProvider().setManifests(manifests).register(context);
+        // build
+        client.getAnnotations().then((annotations: any) => {
+            let manifests = JSON.parse(annotations);
+            new AnnotationsAutoCompleteProvider().setManifests(manifests).register(context);
 
-        //     console.info('Get-Plugins -Type Annotations = (OK, ' + manifests.length + ')');
-        //     let message = '$(testing-passed-icon) Total of ' + manifests.length + ' annotation(s) loaded';
-        //     vscode.window.setStatusBarMessage(message);
+            console.info('Get-Plugins -Type Annotations = (OK, ' + manifests.length + ')');
+            let message = '$(testing-passed-icon) Total of ' + manifests.length + ' annotation(s) loaded';
+            vscode.window.setStatusBarMessage(message);
 
-        //     // dependent providers
-        //     new ParametersAutoCompleteProvider().setManifests(manifests).register(context);
-
-        //     if (callback === null) {
-        //         return;
-        //     }
-        //     callback(client, context);
-        // });
+            // dependent providers
+            new ParametersAutoCompleteProvider().setManifests(manifests).register(context);
+        });
     }
 
     public async registerAssertionsAsync(context: vscode.ExtensionContext) {
@@ -328,20 +302,18 @@ export class ConnectServerCommand extends Command {
     //     });
     // }
 
-    public async registerDataDrivenSnippetAsync(client: RhinoClient, context: vscode.ExtensionContext) : Promise<string[] | undefined> {
+    public async registerDataDrivenSnippetAsync(context: vscode.ExtensionContext, annotations:any) : Promise<string[] | undefined> {
         // user interface
         vscode.window.setStatusBarMessage('$(sync~spin) Loading data-driven snippet(s)...');
         console.log(`${new Date().getTime()} - Start loading data-driven snippet(s)`);
 
         // build  
-        return await client.getAnnotations().then((annotations) => {
             if (typeof annotations === 'string') {
                 let _annotations: string[] = JSON.parse(annotations);
                 new DataAutoCompleteProvider().setAnnotations(_annotations).register(context);
                 vscode.window.setStatusBarMessage('$(testing-passed-icon) Data-Driven snippet(s) loaded');
                 return _annotations;
             }
-        }); 
     }
 
     // private async registerDataDrivenSnippet(client: RhinoClient, context: vscode.ExtensionContext, callback: any) {
