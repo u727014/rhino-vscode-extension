@@ -101,7 +101,7 @@ export class RegisterModelsCommand extends Command {
         let client = this.getRhinoClient();
 
         // clean and register
-        client.deleteModels(() => {
+        client.deleteModels().then(() => {
             this.createModels(createModel, callback);
         });
     }
@@ -131,18 +131,18 @@ export class RegisterModelsCommand extends Command {
 
         // factory
         if (isJson && !isMarkdown) {
-            client.createModels(jsModels, () => {
+            client.createModels(jsModels).then(() => {
                 _callback(this.getContext(), callback);
             });
         }
         if (isMarkdown && !isJson) {
-            client.createModelsMd(mdModels, () => {
+            client.createModelsMd(mdModels).then(() => {
                 _callback(this.getContext(), callback);
             });
         }
         if (isMarkdown && isJson) {
-            client.createModels(jsModels, () => {
-                client.createModelsMd(mdModels, () => {
+            client.createModels(jsModels).then(() => {
+                client.createModelsMd(mdModels).then(() => {
                     _callback(this.getContext(), callback);
                 });
             });

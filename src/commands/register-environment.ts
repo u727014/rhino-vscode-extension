@@ -80,8 +80,8 @@ export class RegisterEnvironmentCommand extends Command {
                 vscode.window.setStatusBarMessage('$(sync~spin) Registering environment...');
 
                 // get
-                client.addEnvironment(mergedJson, () => {
-                    client.syncEnvironment((response: any) => {
+                client.addEnvironment(mergedJson).then(() => {
+                    client.syncEnvironment().then((response: any) => {
                         vscode.window.setStatusBarMessage('$(testing-passed-icon) Environment registered');
                         if(this.isFunction(callback)){
                             callback(response);

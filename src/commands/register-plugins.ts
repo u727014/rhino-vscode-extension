@@ -101,7 +101,7 @@ export class RegisterPluginsCommand extends Command {
     }
 
     private registerPlugins(createModel: string, callback: any) {
-        this.getRhinoClient().createPlugins(createModel, (response: any) => {
+        this.getRhinoClient().createPlugins(createModel).then((response: any) => {
             // setup
             let total = response.toString().split('>>>').length;
 

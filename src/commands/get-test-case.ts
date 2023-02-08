@@ -64,7 +64,7 @@ export class GetTestCaseCommand extends Command {
             vscode.window.setStatusBarMessage('$(sync~spin) Loading Test Case ' + request.entity + '...');
 
             // get
-            client.getTestCase(request, (response: any) => {
+            client.getTestCase(request).then((response: any) => {
                 let range = this.getDocumentRange();
                 vscode.window.activeTextEditor?.edit((i) => {
                     i.replace(range, response);

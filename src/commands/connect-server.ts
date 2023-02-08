@@ -72,10 +72,10 @@ export class ConnectServerCommand extends Command {
         // build
         try {
             this.registerActions(client, context, (client: any, context: any) => {
-                this.registerAnnotations(client, context, (client: any, context: any) => {
+                let annotations = this.registerAnnotations(client, context, (client: any, context: any) => {
                     this.registerAssertions(client, context, (client: any, context: any) => {
                         this.registerMacros(client, context, (client: any, context: any) => {
-                            this.registerDataDrivenSnippet(client, context, (client: any, context: any) => {
+                            this.registerDataDrivenSnippet(client, context, annotations,(client: any, context: any) => {
                                 this.registerModels(client, context, () => {
                                     new CreateTm(context).invokeCommand();
                                 });
@@ -100,17 +100,17 @@ export class ConnectServerCommand extends Command {
         let configuration = Utilities.getConfigurationByManifest();
 
         // build
-        client.createConfiguration(configuration, (data: any) => {
+        client.createConfiguration(configuration).then((data: any) => {
             console.log(`${new Date().getTime()} - Start register actions create config`, configuration, data);
             let response = JSON.parse(data);
             let configurationId = Utilities.isNullOrUndefined(response) || Utilities.isNullOrUndefined(response.id)
                 ? ''
                 : response.id;
-            client.getPluginsByConfiguration(configurationId, (plugins: any) => {
+            client.getPluginsByConfiguration(configurationId).then((plugins: any) => {
                 console.log(`${new Date().getTime()} - Getting register actions plugins by config`, configurationId);
                 let hasNoPlugins = Utilities.isNullOrUndefined(plugins) || plugins === '';
                 if (hasNoPlugins) {
-                    client.getPlugins((plugins: any) => {
+                    client.getPlugins().then((plugins: any) => {
                         console.log(`${new Date().getTime()} - NO PLUGINS - Getting register actions metadata by config`, configurationId);
                         this.getMetadata(client, context, plugins, '', callback);
                     });
@@ -125,9 +125,9 @@ export class ConnectServerCommand extends Command {
     }
 
     private getMetadata(client: RhinoClient, context: vscode.ExtensionContext, plugins: any, configurationId: string, callback: any) {
-        client.getLocators((locators: any) => {
-            client.getAttributes((attributes: any) => {
-                client.getAnnotations((annotations: any) => {
+        client.getLocators().then((locators: any) => {
+            client.getAttributes().then((attributes: any) => {
+                client.getAnnotations().then((annotations: any) => {
                     let actionsManifests = JSON.parse(plugins);
                     let _locators = JSON.parse(locators);
                     let _attributes = JSON.parse(attributes);
@@ -153,7 +153,7 @@ export class ConnectServerCommand extends Command {
                         callback(client, context);
                     }
                     else {
-                        client.deleteConfiguration(configurationId, () => {
+                        client.deleteConfiguration(configurationId).then(() => {
                             callback(client, context);
                         });
                     }
@@ -168,7 +168,7 @@ export class ConnectServerCommand extends Command {
         console.log(`${new Date().getTime()} - Start loading annotations`);
 
         // build
-        client.getAnnotations((annotations: any) => {
+        client.getAnnotations().then((annotations: any) => {
             let manifests = JSON.parse(annotations);
             new AnnotationsAutoCompleteProvider().setManifests(manifests).register(context);
 
@@ -192,11 +192,11 @@ export class ConnectServerCommand extends Command {
         console.log(`${new Date().getTime()} - Start loading assertions`);
 
         // build
-        client.getAnnotations((annotations: any) => {
-            client.getAssertions((assertions: any) => {
-                client.getAttributes((attributes: any) => {
-                    client.getLocators((locators: any) => {
-                        client.getOperators((operators: any) => {
+        client.getAnnotations().then((annotations: any) => {
+            client.getAssertions().then((assertions: any) => {
+                client.getAttributes().then((attributes: any) => {
+                    client.getLocators().then((locators: any) => {
+                        client.getOperators().then((operators: any) => {
                             let manifests = JSON.parse(assertions);
                             let _annotations = JSON.parse(annotations);
                             let _locators = JSON.parse(locators);
@@ -231,7 +231,7 @@ export class ConnectServerCommand extends Command {
         console.log(`${new Date().getTime()} - Start loading macros`);
 
         // build
-        client.getMacros((macros: any) => {
+        client.getMacros().then((macros: any) => {
             let manifests = JSON.parse(macros);
             new MacrosAutoCompleteProvider().setManifests(manifests).register(context);
 
@@ -246,13 +246,13 @@ export class ConnectServerCommand extends Command {
         });
     }
 
-    private registerDataDrivenSnippet(client: RhinoClient, context: vscode.ExtensionContext, callback: any) {
+    private registerDataDrivenSnippet(client: RhinoClient, context: vscode.ExtensionContext, annotations: any, callback: any) {
         // user interface
         vscode.window.setStatusBarMessage('$(sync~spin) Loading data-driven snippet(s)...');
         console.log(`${new Date().getTime()} - Start loading data-driven snippet(s)`);
 
         // build
-        client.getAnnotations((annotations: any) => {
+        client.getAnnotations().then((annotations: any) => {
             let _annotations = JSON.parse(annotations);
             new DataAutoCompleteProvider().setAnnotations(_annotations).register(context);
             vscode.window.setStatusBarMessage('$(testing-passed-icon) Data-Driven snippet(s) loaded');
@@ -270,7 +270,7 @@ export class ConnectServerCommand extends Command {
         console.log(`${new Date().getTime()} - Start loading page model(s)`);
 
         // build
-        client.getModels((models: any) => {
+        client.getModels().then((models: any) => {
             let _models = JSON.parse(models);
             new ModelsAutoCompleteProvider().setManifests(_models).register(context);
             vscode.window.setStatusBarMessage('$(testing-passed-icon) Page models loaded');

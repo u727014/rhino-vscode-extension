@@ -74,7 +74,7 @@ export class RegisterTestCaseCommand extends Command {
         };
 
         // build
-        this.getRhinoClient().createTestCase(configuration, (response: any) => {
+        this.getRhinoClient().createTestCase(configuration).then((response: any) => {
             vscode.window.setStatusBarMessage('$(testing-passed-icon) Integrated test cases created');
 
             // get by id
@@ -87,7 +87,7 @@ export class RegisterTestCaseCommand extends Command {
             if (model.entity === '') {
                 return;
             }
-            this.getRhinoClient().getTestCases(model, (testCase: any) => {
+            this.getRhinoClient().getTestCases(model).then((testCase: any) => {
                 let range = this.getDocumentRange();
                 vscode.window.activeTextEditor?.edit((i) => {
                     i.replace(range, testCase);

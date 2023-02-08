@@ -21,7 +21,7 @@ export class RhinoClient {
         this.httpClient = new HttpClient(baseUrl);
     }
 
-    public addEnvironment(environment: any, callback: any) {
+    public async addEnvironment(environment: any) {
         // setup
         let httpCommand = new HttpCommand()
             .setMethod('POST')
@@ -30,76 +30,73 @@ export class RhinoClient {
             .addHeader('Content-Type', 'application/json');
 
         // get
-        this.httpClient.invokeWebRequest(httpCommand, callback);
+        return await this.httpClient.invokeAsyncWebRequest(httpCommand);
     }
 
-    public syncEnvironment(callback: any) {
+    public async syncEnvironment() {
         // setup
         let httpCommand = new HttpCommand()
             .setMethod('GET')
             .setCommand('/api/v3/environment/sync');
 
         // get
-        this.httpClient.invokeWebRequest(httpCommand, callback);
+        return await this.httpClient.invokeAsyncWebRequest(httpCommand);
     }
-
     /**
      * Summary. Returns a list of available Action Plugins (both Rhino and Code).
      * 
-     * @param callback An argument, which is then invoked inside the outer function to complete some kind of routine or action.
+     * use with async-await
      */
-    public getPlugins(callback: any) {
+    public async getPlugins() {
         // setup
         let httpCommand = new HttpCommand();
         httpCommand.command = '/api/v3/meta/plugins';
 
         // get
-        this.httpClient.invokeWebRequest(httpCommand, callback);
+        return await this.httpClient.invokeAsyncWebRequest(httpCommand);
     }
-
     /**
      * Summary. Returns a list of available Action Plugins (both Rhino and Code).
      * 
-     * @param callback An argument, which is then invoked inside the outer function to complete some kind of routine or action.
+     * use with async-await
      */
-    public getPluginsByConfiguration(configuration: string, callback: any) {
+    public async getPluginsByConfiguration(configuration: string) {
         // setup
         let httpCommand = new HttpCommand();
         httpCommand.command = `/api/v3/meta/plugins/configurations/${configuration}`;
 
         // get
-        this.httpClient.invokeWebRequest(httpCommand, callback);
+        return await this.httpClient.invokeAsyncWebRequest(httpCommand);
     }
 
     /**
      * Summary. Returns a list of available Macro Plugins.
      * 
-     * @param callback An argument, which is then invoked inside the outer function to complete some kind of routine or action.
+     * use with async-await
      */
-    public getMacros(callback: any) {
+    public async getMacros() {
         // setup
         let httpCommand = new HttpCommand();
         httpCommand.command = '/api/v3/meta/macros';
 
         // get
-        this.httpClient.invokeWebRequest(httpCommand, callback);
+        return await this.httpClient.invokeAsyncWebRequest(httpCommand);
     }
 
     /**
      * Summary. Returns a single available test case annotation.
      * 
      * @param key      The unique identifier by which to find the requested resource.
-     * @param callback An argument, which is then invoked inside the outer function to complete some kind of routine or action.
+     * use with async-await
      */
-    public getAnnotation(key: string, callback: any) {
+    public async getAnnotation(key: string) {
         // setup
         let httpCommand = new HttpCommand();
         httpCommand.command = '/api/v3/meta/annotations/' + key;
 
         // get
-        this.httpClient.invokeWebRequest(httpCommand, callback);
+        return await this.httpClient.invokeAsyncWebRequest(httpCommand);
     }
-
     /**
      * Summary. Returns the list of available Rhino log files.
      * 
@@ -128,96 +125,94 @@ export class RhinoClient {
     }
 
     /**
-     * Summary. Returns a list of available test case annotations.
      * 
-     * @param callback An argument, which is then invoked inside the outer function to complete some kind of routine or action.
+     * Summary. Returns a list of available test case annotations.
+     * use with async/await
      */
-    public getAnnotations(callback: any) {
+    public async getAnnotations() {
         // setup
         let httpCommand = new HttpCommand();
         httpCommand.command = '/api/v3/meta/annotations';
 
         // get
-        this.httpClient.invokeWebRequest(httpCommand, callback);
+        return await this.httpClient.invokeAsyncWebRequest(httpCommand);
     }
-
     /**
      * Summary. Returns a single available locator.
      * 
      * @param key      The unique identifier by which to find the requested resource.
-     * @param callback An argument, which is then invoked inside the outer function to complete some kind of routine or action.
+     * use with async-await
      */
-    public getLocator(key: string, callback: any) {
+    public async getLocator(key: string) {
         // setup
         let httpCommand = new HttpCommand();
         httpCommand.command = '/api/v3/meta/locators/' + key;
 
         // get
-        this.httpClient.invokeWebRequest(httpCommand, callback);
+        return await this.httpClient.invokeAsyncWebRequest(httpCommand);
     }
 
     /**
      * Summary. Returns a list of available locators.
      * 
-     * @param callback An argument, which is then invoked inside the outer function to complete some kind of routine or action.
+     * use async-await
      */
-    public getLocators(callback: any) {
+    public async getLocators() {
         // setup
         let httpCommand = new HttpCommand();
         httpCommand.command = '/api/v3/meta/locators';
 
         // get
-        this.httpClient.invokeWebRequest(httpCommand, callback);
+        return await this.httpClient.invokeAsyncWebRequest(httpCommand);
     }
 
     /**
      * Summary. Returns a collection of available assertions.
      * 
-     * @param callback An argument, which is then invoked inside the outer function to complete some kind of routine or action.
+     * use with async-await
      */
-    public getAssertions(callback: any) {
+    public async getAssertions() {
         // setup
         let httpCommand = new HttpCommand();
         httpCommand.command = '/api/v3/meta/assertions';
 
         // get
-        this.httpClient.invokeWebRequest(httpCommand, callback);
+        return await this.httpClient.invokeAsyncWebRequest(httpCommand);
     }
-
     /**
      * Summary. Returns a collection of available assertions.
      * 
-     * @param callback An argument, which is then invoked inside the outer function to complete some kind of routine or action.
+     * use with async-await
      */
-    public getOperators(callback: any) {
+    public async getOperators() {
         // setup
         let httpCommand = new HttpCommand();
         httpCommand.command = '/api/v3/meta/operators';
 
         // get
-        this.httpClient.invokeWebRequest(httpCommand, callback);
+        return await this.httpClient.invokeAsyncWebRequest(httpCommand);
     }
 
     /**
      * Summary. Returns a list of available Plugins (both Rhino and Code).
      * 
-     * @param callback An argument, which is then invoked inside the outer function to complete some kind of routine or action.
+     * use with async-await
      */
-    public getPluginsReferences(callback: any) {
+    public async getPluginsReferences() {
         // setup
         let httpCommand = new HttpCommand();
         httpCommand.command = '/api/v3/meta/plugins/references';
 
         // get
-        this.httpClient.invokeWebRequest(httpCommand, callback);
+        return await this.httpClient.invokeAsyncWebRequest(httpCommand);
     }
 
     /**
      * Summary. Gets a collection of RhinoTestSymbolModel based on the RhinoTestCase spec provided.
      * 
-     * @param callback An argument, which is then invoked inside the outer function to complete some kind of routine or action.
+     * use with async-await
      */
-    public getSymbols(input: string, callback: any) {
+    public async getSymbols(input: string) {
         // setup
         let httpCommand = new HttpCommand();
         httpCommand.command = '/api/v3/Meta/tests/symbols';
@@ -226,60 +221,57 @@ export class RhinoClient {
         httpCommand.body = input;
 
         // get
-        this.httpClient.invokeWebRequest(httpCommand, callback);
+        return await this.httpClient.invokeAsyncWebRequest(httpCommand);
     }
-
     /**
      * Summary. Returns a single available Plugin (both Rhino and Code).
      * 
      * @param key      The unique identifier by which to find the requested resource.
-     * @param callback An argument, which is then invoked inside the outer function to complete some kind of routine or action.
+     * use with async-await
      */
-    public getPlugin(key: string, callback: any) {
+    public async getPlugin(key: string) {
         // setup
         let httpCommand = new HttpCommand();
         httpCommand.command = '/api/v3/meta/plugins/' + key;
 
         // get
-        this.httpClient.invokeWebRequest(httpCommand, callback);
+        return await this.httpClient.invokeAsyncWebRequest(httpCommand);
     }
 
     /**
      * Summary. Returns a collection of available element special attributes.
      * 
-     * @param callback An argument, which is then invoked inside the outer function to complete some kind of routine or action.
+     * use with async-await
      */
-    public getAttributes(callback: any) {
+    public async getAttributes() {
         // setup
         let httpCommand = new HttpCommand();
         httpCommand.command = '/api/v3/meta/attributes';
 
         // get
-        this.httpClient.invokeWebRequest(httpCommand, callback);
+        return await this.httpClient.invokeAsyncWebRequest(httpCommand);
     }
-
     /**
      * Summary. Returns a single available Plugin (both Rhino and Code).
      * 
      * @param key      The unique identifier by which to find the requested resource.
-     * @param callback An argument, which is then invoked inside the outer function to complete some kind of routine or action.
+     * use with async-await
      */
-    public getPluginReference(key: string, callback: any) {
+    public async getPluginReference(key: string) {
         // setup
         let httpCommand = new HttpCommand();
         httpCommand.command = '/api/v3/meta/plugins/references/' + key;
 
         // get
-        this.httpClient.invokeWebRequest(httpCommand, callback);
+        return await this.httpClient.invokeAsyncWebRequest(httpCommand);
     }
-
     /**
      * Summary. Invoke Rhino Configuration against Rhino Server.
      * 
      * @param configuration The Rhino Configuration object to invoke.
-     * @param callback      An argument, which is then invoked inside the outer function to complete some kind of routine or action.
+     * use with async-await
      */
-    public invokeConfiguration(configuration: any, callback: any) {
+    public async invokeConfiguration(configuration: any) {
         // setup
         let httpCommand = new HttpCommand()
             .setMethod('POST')
@@ -288,16 +280,15 @@ export class RhinoClient {
             .addHeader('Content-Type', 'application/json');
 
         // get
-        this.httpClient.invokeWebRequest(httpCommand, callback);
+        return await this.httpClient.invokeAsyncWebRequest(httpCommand);
     }
-
     /**
      * Summary. Creates a new Test Case entity on the integrated application.
      * 
      * @param createModel Integrated Test Case create model.
-     * @param callback    An argument, which is then invoked inside the outer function to complete some kind of routine or action. 
+     * use with async-await
      */
-    public createTestCase(createModel: any, callback: any) {
+    public async createTestCase(createModel: any) {
         // setup
         let httpCommand = new HttpCommand()
             .setMethod('POST')
@@ -306,16 +297,16 @@ export class RhinoClient {
             .addHeader('Content-Type', 'application/json');
 
         // get
-        this.httpClient.invokeWebRequest(httpCommand, callback);
+        return await this.httpClient.invokeAsyncWebRequest(httpCommand);
     }
 
     /**
      * Summary. Creates a new Test Case entity on the integrated application.
      * 
      * @param integrationModel Integrated Test Case get model.
-     * @param callback         An argument, which is then invoked inside the outer function to complete some kind of routine or action. 
+     * use with async-await
      */
-    public getTestCase(integrationModel: any, callback: any) {
+    public async getTestCase(integrationModel: any) {
         // setup
         let httpCommand = new HttpCommand()
             .setMethod('POST')
@@ -324,16 +315,16 @@ export class RhinoClient {
             .addHeader('Content-Type', 'application/json');
 
         // get
-        this.httpClient.invokeWebRequest(httpCommand, callback);
+        return await this.httpClient.invokeAsyncWebRequest(httpCommand);
     }
 
     /**
      * Summary. Creates a new Test Case entity on the integrated application.
      * 
      * @param integrationModel Integrated Test Case get model.
-     * @param callback         An argument, which is then invoked inside the outer function to complete some kind of routine or action. 
+     * use with async-await
      */
-    public getTestCases(integrationModel: any, callback: any) {
+    public async getTestCases(integrationModel: any) {
         // setup
         let httpCommand = new HttpCommand()
             .setMethod('POST')
@@ -342,16 +333,15 @@ export class RhinoClient {
             .addHeader('Content-Type', 'application/json');
 
         // get
-        this.httpClient.invokeWebRequest(httpCommand, callback);
+        return await this.httpClient.invokeAsyncWebRequest(httpCommand);
     }
-
     /**
      * Summary. Creates a collection of Rhino Plugins using Rhino Plugins spec.
      * 
      * @param createModel Rhino Plugins spec.
-     * @param callback    An argument, which is then invoked inside the outer function to complete some kind of routine or action. 
+     * use with async-await
      */
-    public createPlugins(createModel: string, callback: any) {
+    public async createPlugins(createModel: string) {
         // setup
         let httpCommand = new HttpCommand()
             .setMethod('POST')
@@ -360,9 +350,8 @@ export class RhinoClient {
             .addHeader('Content-Type', 'text/plain');
 
         // get
-        this.httpClient.invokeWebRequest(httpCommand, callback);
+        return await this.httpClient.invokeAsyncWebRequest(httpCommand);
     }
-
     /**
      * Summary. Creates a collection of Rhino Resources using Rhino Resources spec.
      * 
@@ -384,9 +373,9 @@ export class RhinoClient {
      * Summary. Creates a collection of Rhino Models.
      * 
      * @param createModel Rhino models request (an array of models).
-     * @param callback    An argument, which is then invoked inside the outer function to complete some kind of routine or action. 
+     * use with async-await
      */
-    public createModelsMd(createModel: string, callback: any) {
+    public async createModelsMd(createModel: string) {
         // setup
         let httpCommand = new HttpCommand()
             .setMethod('POST')
@@ -395,10 +384,10 @@ export class RhinoClient {
             .addHeader('Content-Type', 'text/plain');
 
         // get
-        this.httpClient.invokeWebRequest(httpCommand, callback);
+        return await this.httpClient.invokeAsyncWebRequest(httpCommand);
     }
 
-    public createModels(createModel: any[], callback: any) {
+    public async createModels(createModel: any[]) {
         // setup
         let httpCommand = new HttpCommand()
             .setMethod('POST')
@@ -407,51 +396,52 @@ export class RhinoClient {
             .addHeader('Content-Type', 'application/json');
 
         // get
-        this.httpClient.invokeWebRequest(httpCommand, callback);
+        return await this.httpClient.invokeAsyncWebRequest(httpCommand);
     }
 
     /**
      * Summary. Returns a list of available Rhino Page Models.
      * 
-     * @param callback An argument, which is then invoked inside the outer function to complete some kind of routine or action.
+     * use with async-await
      */
-    public getModels(callback: any) {
+    public async getModels() {
         // setup
         let httpCommand = new HttpCommand();
         httpCommand.command = '/api/v3/meta/models';
 
         // get
-        this.httpClient.invokeWebRequest(httpCommand, callback);
+        return await this.httpClient.invokeAsyncWebRequest(httpCommand);
     }
+
 
     /**
      * Summary. Delete all models under the user domain.
      * 
-     * @param callback An argument, which is then invoked inside the outer function to complete some kind of routine or action.
+     * use with async-await
      */
-    public deleteModels(callback: any) {
+    public async deleteModels() {
         // setup
         let httpCommand = new HttpCommand().setMethod('DELETE').setCommand('/api/v3/models');
 
         // get
-        this.httpClient.invokeWebRequest(httpCommand, callback);
+        return await this.httpClient.invokeAsyncWebRequest(httpCommand);
     }
 
     /**
-     * Summary. Returns a list of available Rhino Keywords.
-     * 
-     * @param callback An argument, which is then invoked inside the outer function to complete some kind of routine or action.
-     */
-    public getVerbs(callback: any) {
+    * Summary. Returns a list of available Rhino Keywords.
+    * 
+    * use with async-await
+    */
+    public async getVerbs() {
         // setup
         let httpCommand = new HttpCommand();
         httpCommand.command = '/api/v3/meta/verbs';
 
         // get
-        this.httpClient.invokeWebRequest(httpCommand, callback);
+        return await this.httpClient.invokeAsyncWebRequest(httpCommand);
     }
 
-    public createConfiguration(configuration: any, callback: any) {
+    public async createConfiguration(configuration: any) {
         // setup
         let httpCommand = new HttpCommand()
             .setMethod('POST')
@@ -460,20 +450,20 @@ export class RhinoClient {
             .addHeader('Content-Type', 'application/json');
 
         // get
-        this.httpClient.invokeWebRequest(httpCommand, callback);
+        return await this.httpClient.invokeAsyncWebRequest(httpCommand);
     }
 
-    public deleteConfiguration(configuration: any, callback: any) {
+    public async deleteConfiguration(configuration: any) {
         // setup
         let httpCommand = new HttpCommand()
             .setMethod('DELETE')
             .setCommand(`/api/v3/configurations/${configuration}`);
 
         // get
-        this.httpClient.invokeWebRequest(httpCommand, callback);
+        return await this.httpClient.invokeAsyncWebRequest(httpCommand);
     }
 
-    public getActions(body: string, callback: any) {
+    public async getActions(body: string) {
         // setup
         let httpCommand = new HttpCommand()
             .setMethod('POST')
@@ -482,16 +472,16 @@ export class RhinoClient {
             .addHeader('Content-Type', 'text/plain');
 
         // get
-        this.httpClient.invokeWebRequest(httpCommand, callback);
+        return await this.httpClient.invokeAsyncWebRequest(httpCommand);
     }
 
-    public getStatus(callback: any) {
+    public async getStatus() {
         // setup
         let httpCommand = new HttpCommand()
             .setMethod('GET')
             .setCommand(`/api/v3/ping/rhino`);
 
         // get
-        this.httpClient.invokeWebRequest(httpCommand, callback);
+        return await this.httpClient.invokeAsyncWebRequest(httpCommand);
     }
 }

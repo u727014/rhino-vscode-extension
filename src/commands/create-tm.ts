@@ -62,15 +62,15 @@ export class CreateTm extends Command {
         let configuration = Utilities.getConfigurationByManifest();
 
         // build
-        client.createConfiguration(configuration, (data: any) => {
+        client.createConfiguration(configuration).then((data: any) => {
             let response = JSON.parse(data);
             let configurationId = Utilities.isNullOrUndefined(response) || Utilities.isNullOrUndefined(response.id)
                 ? ''
                 : response.id;
-            client.getPluginsByConfiguration(configurationId, (plugins: any) => {
+            client.getPluginsByConfiguration(configurationId).then((plugins: any) => {
                 let hasNoPlugins = Utilities.isNullOrUndefined(plugins) || plugins === '';
                 if (hasNoPlugins) {
-                    client.getPlugins((plugins: any) => {
+                    client.getPlugins().then((plugins: any) => {
                         this.getMetadata(client, plugins, '');
                     });
                 }
@@ -81,12 +81,12 @@ export class CreateTm extends Command {
         });
     }
 
-    private getMetadata(client: RhinoClient, plugins: any, configurationId: string) {
-        client.getOperators((operators: any) => {
-            client.getVerbs((verbs: any) => {
-                client.getAssertions((assertions: any) => {
-                    client.getLocators((locators: any) => {
-                        client.getAnnotations((annotations: any) => {
+    private async getMetadata(client: RhinoClient, plugins: any, configurationId: string) {
+        client.getOperators().then((operators: any) => {
+            client.getVerbs().then((verbs: any) => {
+                client.getAssertions().then((assertions: any) => {
+                    client.getLocators().then((locators: any) => {
+                        client.getAnnotations().then((annotations: any) => {
                             const _plugins = JSON.parse(plugins);
                             const _operators = JSON.parse(operators);
                             const _verbs = JSON.parse(verbs);
@@ -112,7 +112,7 @@ export class CreateTm extends Command {
 
                             // cleanup
                             if (configurationId !== null && configurationId !== '') {
-                                client.deleteConfiguration(configurationId, null);
+                                client.deleteConfiguration(configurationId);
                             }
                         });
                     });

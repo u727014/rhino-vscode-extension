@@ -58,7 +58,7 @@ export class InvokeAllTestCasesCommand extends Command {
 
         // invoke
         this.getConfiguration((configuration: any) => {
-            this.getRhinoClient().invokeConfiguration(configuration, (testRun: any) => {
+            this.getRhinoClient().invokeConfiguration(configuration).then((testRun: any) => {
                 let _testRun = JSON.parse(testRun);
                 _testRun.actual === true
                     ? vscode.window.setStatusBarMessage("$(testing-passed-icon) Invoke completed w/o test(s) failures")

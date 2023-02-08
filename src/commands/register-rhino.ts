@@ -26,7 +26,7 @@ import { RhinoDocumentSymbolProvider } from '../providers/rhino-symbol-provider'
 import { RhinoDefinitionProvider } from '../providers/rhino-definition-provider';
 import { UpdateSymbolsCommand } from './update-symbols';
 import { CreateProjectCommand } from './create-project';
-import { InvokeTestCasesCommand } from './invoke-test-cases';
+// import { InvokeTestCasesCommand } from './invoke-test-cases';
 
 export class RegisterRhinoCommand extends Command {
     /**
@@ -57,7 +57,7 @@ export class RegisterRhinoCommand extends Command {
         });
 
         // register formatters
-        this.getRhinoClient().getAnnotations((annotationsResponse: any) => {
+        this.getRhinoClient().getAnnotations().then((annotationsResponse: any) => {
             let annotations = JSON.parse(annotationsResponse);
             let testCaseFormatter = new TestCaseFormatter(this.getContext(), annotations);
 
@@ -116,7 +116,7 @@ export class RegisterRhinoCommand extends Command {
             new GetTestCaseCommand(context),
             new InvokeAllTestCasesCommand(context),
             new InvokeTestCaseCommand(context),
-            new InvokeTestCasesCommand(context),
+            // new InvokeTestCasesCommand(context),
             new RegisterEnvironmentCommand(context),
             new RegisterModelsCommand(context),
             new RegisterPluginsCommand(context),
