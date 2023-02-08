@@ -68,30 +68,43 @@ export class ConnectServerCommand extends Command {
         // clean
         new RegisterRhinoCommand(context).invokeCommand();
 
- // TODO: optimize calls to run in parallel and create TM when all complete
+        // TODO: optimize calls to run in parallel and create TM when all complete
         // build
         try {
             await this.registerActions(client, context);
             let annotations = this.registerAnnotations(client, context);
-            await this.registerAssertionsAsync(context);
-            await this.registerMacrosAsync(client, context);
-            await this.registerDataDrivenSnippetAsync(context, annotations);
-            await this.registerModelsAsync(client, context);
+            client.getLocators().then((locators: any) => {
+                let _locators = JSON.parse(locators);
+                new ActionsAutoCompleteProvider()
+                    .setLocators(_locators)
+                    .register(context);
+            });
+            await this.registerAssertions(context);
+            await this.registerMacros(client, context);
+            await this.registerDataDrivenSnippet(context, annotations);
+            await this.registerModels(client, context);
             new CreateTm(context).invokeCommand();
 
-                // this.registerAnnotations(client, context, (client: any, context: any) => {
-                    // this.registerAssertions(client, context, (client: any, context: any) => {
-                        // this.registerMacros(client, context, (client: any, context: any) => {
-                            // this.registerDataDrivenSnippet(client, context, (client: any, context: any) => {
-                                // this.registerModels(client, context, () => {
-                                    // new CreateTm(context).invokeCommand();
-                                // });
-                            // });
-                        // });
-                    // });
-                // });
+            // let contextData = {
+            //     actions: "",
+            //     annotations:"",
+            //     assertions: "",
+            //     dataDrivenSnippet: "",
+            //     models: ""
+            // };
+            // this.registerAnnotations(client, context, (client: any, context: any) => {
+            // this.registerAssertions(client, context, (client: any, context: any) => {
+            // this.registerMacros(client, context, (client: any, context: any) => {
+            // this.registerDataDrivenSnippet(client, context, (client: any, context: any) => {
+            // this.registerModels(client, context, () => {
+            // new CreateTm(context).invokeCommand();
             // });
-            
+            // });
+            // });
+            // });
+            // });
+            // });
+
         } catch (error) {
             console.error(error);
             vscode.window.setStatusBarMessage("$(testing-error-icon) Errors occurred connecting to Rhino Server");
@@ -101,29 +114,29 @@ export class ConnectServerCommand extends Command {
     private async registerActions(client: RhinoClient, context: vscode.ExtensionContext) {
         // user interface
         vscode.window.setStatusBarMessage('$(sync~spin) Loading action(s)...');
-        
+
         console.log(`${new Date().getTime()} - Start loading actions`);
         // setup
         let configuration = Utilities.getConfigurationByManifest();
-        
+
         // build
         client.createConfiguration(configuration).then(async (data: any) => {
-            console.log(`${new Date().getTime()} - Start register actions create config`,configuration, data);
+            console.log(`${new Date().getTime()} - Start register actions create config`, configuration, data);
             let response = JSON.parse(data);
             let configurationId = Utilities.isNullOrUndefined(response) || Utilities.isNullOrUndefined(response.id)
                 ? ''
                 : response.id;
             return await client.getPluginsByConfiguration(configurationId).then(async (plugins) => {
-                console.log(`${new Date().getTime()} - Getting register actions plugins by config`,configurationId);
+                console.log(`${new Date().getTime()} - Getting register actions plugins by config`, configurationId);
                 let hasNoPlugins = Utilities.isNullOrUndefined(plugins) || plugins === '';
                 if (hasNoPlugins) {
                     return await client.getPlugins().then((plugins: any) => {
-                        console.log(`${new Date().getTime()} - NO PLUGINS - Getting register actions metadata by config`,configurationId);
+                        console.log(`${new Date().getTime()} - NO PLUGINS - Getting register actions metadata by config`, configurationId);
                         this.getMetadata(client, context, plugins, '');
                     });
                 }
                 else {
-                    console.log(`${new Date().getTime()} - Getting register actions metadata by config`,configurationId);
+                    console.log(`${new Date().getTime()} - Getting register actions metadata by config`, configurationId);
                     this.getMetadata(client, context, plugins, configurationId);
                 }
             });
@@ -131,67 +144,29 @@ export class ConnectServerCommand extends Command {
         });
     }
 
-///
-    public async getAsyncMetadata(client: RhinoClient, context: vscode.ExtensionContext, plugins: any): Promise<string[] | undefined> {
-        return await client.getAttributes().then((attributes) => {
+    public async getMetadata(client: RhinoClient, context: vscode.ExtensionContext, plugins: any, annotations: any) {
+        // await client.getLocators().then((locators: any) => {
+        client.getAttributes().then((attributes) => {
             if (typeof attributes === 'string') {
-                let _attributes: string[] = JSON.parse(attributes); 
-                let actionsManifests: string[] = JSON.parse(plugins);
+                let actionsManifests = JSON.parse(plugins);
+                // let _locators = JSON.parse(locators);
+                let _attributes = JSON.parse(attributes);
+                let _annotations = JSON.parse(annotations);
                 let pluginsPattern = Utilities.getPluginsPattern(actionsManifests);
 
                 new ActionsAutoCompleteProvider()
-                .setPattern(pluginsPattern)
-                .setManifests(actionsManifests)
-                .setAttributes(_attributes)
-                .register(context);
+                    .setPattern(pluginsPattern)
+                    .setAttributes(_attributes)
+                    .setManifests(actionsManifests)
+                    // .setLocators(_locators)
+                    .setAnnotations(_annotations)
+                    .register(context);
 
                 console.info('Get-Plugins -Type Actions = (OK, ' + actionsManifests.length + ')');
                 let message = '$(testing-passed-icon) Total of ' + actionsManifests.length + ' action(s) loaded';
                 vscode.window.setStatusBarMessage(message);
-
-                return _attributes;
             }
         });
-    }
-///
-    private async getMetadata(client: RhinoClient, context: vscode.ExtensionContext, plugins: any, configurationId: string) {
-            // client.getLocators((locators: any) => {
-            // return await client.getAttributes((attributes: any) => {
-                // client.getAnnotations((annotations: any) => {
-                    // let actionsManifests = JSON.parse(plugins);
-                    // let _locators = JSON.parse(locators);
-                    // let _attributes = JSON.parse(attributes);
-                    // let _annotations = JSON.parse(annotations);
-                    // let pluginsPattern = Utilities.getPluginsPattern(actionsManifests);
-
-                    // new ActionsAutoCompleteProvider()
-                    //     .setPattern(pluginsPattern)
-                        // .setAttributes(_attributes)
-                        // .setManifests(actionsManifests)
-                        // .setLocators(_locators)
-                        // .setAnnotations(_annotations)
-                        // .register(context);
-
-                    // console.info('Get-Plugins -Type Actions = (OK, ' + actionsManifests.length + ')');
-                    // let message = '$(testing-passed-icon) Total of ' + actionsManifests.length + ' action(s) loaded';
-                    // vscode.window.setStatusBarMessage(message);
-                   
-                    
-
-                    // if (callback === null) {
-                    //     return;
-                    // }
-                    // if (configurationId === null || configurationId === '') {
-                    //     callback(client, context);
-                    // }
-                    // else {
-                    //     client.deleteConfiguration(configurationId, () => {
-                    //         callback(client, context);
-                    //     });
-                    // }
-                    // this.getAsyncMetadata(client, context, plugins, configurationId);
-                // });
-            // });
         // });
     }
 
@@ -214,7 +189,7 @@ export class ConnectServerCommand extends Command {
         });
     }
 
-    public async registerAssertionsAsync(context: vscode.ExtensionContext) {
+    public async registerAssertions(context: vscode.ExtensionContext) {
         // user interface
         vscode.window.setStatusBarMessage('$(sync~spin) Loading assertion method(s)...');
         console.log(`${new Date().getTime()} - Start loading assertions`);
@@ -263,7 +238,7 @@ export class ConnectServerCommand extends Command {
     //     // });
     // }
 
-    public async registerMacrosAsync(client: RhinoClient, context: vscode.ExtensionContext) : Promise<string[] | undefined> {
+    public async registerMacros(client: RhinoClient, context: vscode.ExtensionContext): Promise<string[] | undefined> {
         // user interface
         vscode.window.setStatusBarMessage('$(sync~spin) Loading macros(s)...');
         console.log(`${new Date().getTime()} - Start loading macros`);
@@ -278,93 +253,36 @@ export class ConnectServerCommand extends Command {
                 vscode.window.setStatusBarMessage(message);
                 return manifests;
             }
-        }); 
+        });
     }
 
-    // private registerMacros(client: RhinoClient, context: vscode.ExtensionContext, callback: any) {
-    //     // user interface
-    //     vscode.window.setStatusBarMessage('$(sync~spin) Loading macros(s)...');
-    //     console.log(`${new Date().getTime()} - Start loading macros`);
-
-    //     // build
-    //     client.getMacros((macros: any) => {
-    //         let manifests = JSON.parse(macros);
-    //         new MacrosAutoCompleteProvider().setManifests(manifests).register(context);
-
-    //         console.info('Get-Plugins -Type Macro = (OK, ' + manifests.length + ')');
-    //         let message = '$(testing-passed-icon) Total of ' + manifests.length + ' macros(s) loaded';
-    //         vscode.window.setStatusBarMessage(message);
-
-    //         if (callback === null) {
-    //             return;
-    //         }
-    //         callback(client, context);
-    //     });
-    // }
-
-    public async registerDataDrivenSnippetAsync(context: vscode.ExtensionContext, annotations:any) : Promise<string[] | undefined> {
+    public async registerDataDrivenSnippet(context: vscode.ExtensionContext, annotations: any): Promise<string[] | undefined> {
         // user interface
         vscode.window.setStatusBarMessage('$(sync~spin) Loading data-driven snippet(s)...');
         console.log(`${new Date().getTime()} - Start loading data-driven snippet(s)`);
 
         // build  
-            if (typeof annotations === 'string') {
-                let _annotations: string[] = JSON.parse(annotations);
-                new DataAutoCompleteProvider().setAnnotations(_annotations).register(context);
-                vscode.window.setStatusBarMessage('$(testing-passed-icon) Data-Driven snippet(s) loaded');
-                return _annotations;
-            }
+        if (typeof annotations === 'string') {
+            let _annotations: string[] = JSON.parse(annotations);
+            new DataAutoCompleteProvider().setAnnotations(_annotations).register(context);
+            vscode.window.setStatusBarMessage('$(testing-passed-icon) Data-Driven snippet(s) loaded');
+            return _annotations;
+        }
     }
 
-    // private async registerDataDrivenSnippet(client: RhinoClient, context: vscode.ExtensionContext, callback: any) {
-    //     // user interface
-    //     vscode.window.setStatusBarMessage('$(sync~spin) Loading data-driven snippet(s)...');
-    //     console.log(`${new Date().getTime()} - Start loading data-driven snippet(s)`);
-
-    //     // build
-    //     client.getAnnotations((annotations: any) => {
-    //         let _annotations = JSON.parse(annotations);
-    //         new DataAutoCompleteProvider().setAnnotations(_annotations).register(context);
-    //         vscode.window.setStatusBarMessage('$(testing-passed-icon) Data-Driven snippet(s) loaded');
-
-    //         if (callback === null) {
-    //             return;
-    //         }
-    //         callback(client, context);
-    //     });
-    // }
-
-    // private async registerModels(client: RhinoClient, context: vscode.ExtensionContext, callback: any) {
-    //     // user interface
-    //     vscode.window.setStatusBarMessage('$(sync~spin) Loading page model(s)...');
-    //     console.log(`${new Date().getTime()} - Start loading page model(s)`);
-
-    //     // build
-    //     client.getModels((models: any) => {
-    //         let _models = JSON.parse(models);
-    //         new ModelsAutoCompleteProvider().setManifests(_models).register(context);
-    //         vscode.window.setStatusBarMessage('$(testing-passed-icon) Page models loaded');
-
-    //         if (callback === null) {
-    //             return;
-    //         }
-    //         callback(client, context);
-    //     });
-    // }
-// }
-    public async registerModelsAsync(client: RhinoClient, context: vscode.ExtensionContext): Promise<string[] | undefined> {
+    public async registerModels(client: RhinoClient, context: vscode.ExtensionContext): Promise<string[] | undefined> {
         // user interface
         vscode.window.setStatusBarMessage('$(sync~spin) Loading page model(s)...');
         console.log(`${new Date().getTime()} - Start loading page model(s)`);
 
         // build   
         return await client.getModels().then((models) => {
-                if (typeof models === 'string') {
-                    let _models: string[] = JSON.parse(models);
-                    new ModelsAutoCompleteProvider().setManifests(_models).register(context);
-                    vscode.window.setStatusBarMessage('$(testing-passed-icon) Page models loaded');
-                    return _models;
-                }
-            }); 
-        }
+            if (typeof models === 'string') {
+                let _models: string[] = JSON.parse(models);
+                new ModelsAutoCompleteProvider().setManifests(_models).register(context);
+                vscode.window.setStatusBarMessage('$(testing-passed-icon) Page models loaded');
+                return _models;
+            }
+        });
     }
+}
