@@ -88,7 +88,7 @@ export class CreateTm extends Command {
         });
     }
     public async getOperatorsMetadata(client: RhinoClient): Promise<string[] | undefined> {
-        return await client.getOperators().then((operators) => {
+        return await client.getLocators().then((operators) => {
             if (typeof operators === 'string') {
                 let _operators: string[] = JSON.parse(operators);
                 let keywordControl = [];
@@ -99,7 +99,7 @@ export class CreateTm extends Command {
     }
 
     public async getVerbsMetadata(client: RhinoClient): Promise<string[] | undefined> {
-        return await client.getVerbs().then((verbs) => {
+        return await client.getLocators().then((verbs) => {
             if (typeof verbs === 'string') {
                 let _verbs: string[] = JSON.parse(verbs);
                 let keywordControl = [];
