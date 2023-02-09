@@ -9,7 +9,6 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// register
 	new CreateProjectCommand(context).register();
-	registerCommand.register();
 	registerCommand.invokeCommand();
 	let logger = registerCommand.getRhinoLogger();
 	logger.show();

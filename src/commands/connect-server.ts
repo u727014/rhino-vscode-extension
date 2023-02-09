@@ -264,7 +264,7 @@ export class ConnectServerCommand extends Command {
         });
     }
 
-    private registerModels(client: RhinoClient, context: vscode.ExtensionContext, callback: any) {
+    private async registerModels(client: RhinoClient, context: vscode.ExtensionContext, callback: any) {
         // user interface
         vscode.window.setStatusBarMessage('$(sync~spin) Loading page model(s)...');
         console.log(`${new Date().getTime()} - Start loading page model(s)`);
