@@ -42,6 +42,7 @@ export class RhinoClient {
         // get
         return await this.httpClient.invokeAsyncWebRequest(httpCommand);
     }
+    
     /**
      * Summary. Returns a list of available Action Plugins (both Rhino and Code).
      * 
@@ -55,6 +56,7 @@ export class RhinoClient {
         // get
         return await this.httpClient.invokeAsyncWebRequest(httpCommand);
     }
+
     /**
      * Summary. Returns a list of available Action Plugins (both Rhino and Code).
      * 
@@ -97,6 +99,7 @@ export class RhinoClient {
         // get
         return await this.httpClient.invokeAsyncWebRequest(httpCommand);
     }
+
     /**
      * Summary. Returns the list of available Rhino log files.
      * 
@@ -137,6 +140,7 @@ export class RhinoClient {
         // get
         return await this.httpClient.invokeAsyncWebRequest(httpCommand);
     }
+
     /**
      * Summary. Returns a single available locator.
      * 
@@ -179,6 +183,7 @@ export class RhinoClient {
         // get
         return await this.httpClient.invokeAsyncWebRequest(httpCommand);
     }
+
     /**
      * Summary. Returns a collection of available assertions.
      * 
@@ -223,11 +228,12 @@ export class RhinoClient {
         // get
         return await this.httpClient.invokeAsyncWebRequest(httpCommand);
     }
+
     /**
      * Summary. Returns a single available Plugin (both Rhino and Code).
      * 
      * @param key      The unique identifier by which to find the requested resource.
-     * use with async-await
+     * use with async-awaiFt
      */
     public async getPlugin(key: string) {
         // setup
@@ -251,6 +257,7 @@ export class RhinoClient {
         // get
         return await this.httpClient.invokeAsyncWebRequest(httpCommand);
     }
+
     /**
      * Summary. Returns a single available Plugin (both Rhino and Code).
      * 
@@ -265,6 +272,7 @@ export class RhinoClient {
         // get
         return await this.httpClient.invokeAsyncWebRequest(httpCommand);
     }
+
     /**
      * Summary. Invoke Rhino Configuration against Rhino Server.
      * 
@@ -335,6 +343,7 @@ export class RhinoClient {
         // get
         return await this.httpClient.invokeAsyncWebRequest(httpCommand);
     }
+
     /**
      * Summary. Creates a collection of Rhino Plugins using Rhino Plugins spec.
      * 
@@ -352,6 +361,7 @@ export class RhinoClient {
         // get
         return await this.httpClient.invokeAsyncWebRequest(httpCommand);
     }
+
     /**
      * Summary. Creates a collection of Rhino Resources using Rhino Resources spec.
      * 
@@ -412,7 +422,6 @@ export class RhinoClient {
         // get
         return await this.httpClient.invokeAsyncWebRequest(httpCommand);
     }
-
 
     /**
      * Summary. Delete all models under the user domain.

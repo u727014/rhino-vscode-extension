@@ -75,10 +75,10 @@ export class ConnectServerCommand extends Command {
             let _annotations = await this.registerAnnotations(client, context);
             await this.registerActions(client, context, _annotations);
 
-            let _assertions = await this.registerAssertions(client, context, _annotations);
+            await this.registerAssertions(client, context, _annotations);
             await this.registerDataDrivenSnippetAsync(client, context, _annotations);
             await this.registerModelsAsync(client, context);
-            new CreateTm(context, _assertions).invokeCommand();
+            new CreateTm(context).invokeCommand();
 
             // this.registerAnnotations(client, context, (client: any, context: any) => {
             // this.registerAssertions(client, context, (client: any, context: any) => {
