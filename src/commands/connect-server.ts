@@ -9,6 +9,7 @@
 import * as vscode from 'vscode';
 import { Utilities } from '../extensions/utilities';
 import { RhinoClient } from '../framework/rhino-client';
+// import { RhinoClientSingleton } from '../models/rhino-client-singleton';
 
 import { ActionsAutoCompleteProvider } from '../providers/actions-auto-complete-provider';
 import { AnnotationsAutoCompleteProvider } from '../providers/annotations-auto-complete-provider';
@@ -20,6 +21,13 @@ import { ParametersAutoCompleteProvider } from '../providers/parameters-auto-com
 import { Command } from "./command";
 import { CreateTm } from './create-tm';
 import { RegisterRhinoCommand } from './register-rhino';
+
+import 'reflect-metadata';
+
+// import express from 'express';
+import Container from 'typedi';
+import AssertionsController from '../models/AssertionsController';
+import express = require('express');
 
 export class ConnectServerCommand extends Command {
     /**
@@ -71,11 +79,15 @@ export class ConnectServerCommand extends Command {
         // TODO: optimize calls to run in parallel and create TM when all complete
         // build
         try {
+            // RhinoClientSingleton.getInstance().getPlagins();
+
             await this.registerMacrosAsync(client, context);
+            // RhinoClientSingleton.getInstance().getAnnotations();
+            // let _annotations = RhinoClientSingleton.getInstance().getAssertions();
+
             let _annotations = await this.registerAnnotations(client, context);
             await this.registerActions(client, context, _annotations);
-
-            await this.registerAssertions(client, context, _annotations);
+            // await this.registerAssertions(client, context, _annotations);
             await this.registerDataDrivenSnippetAsync(client, context, _annotations);
             await this.registerModelsAsync(client, context);
             new CreateTm(context).invokeCommand();
@@ -203,30 +215,43 @@ export class ConnectServerCommand extends Command {
         console.log(`${new Date().getTime()} - Start loading assertions`);
 
         // build  
-        return await client.getAssertions().then((assertions: any) => {
-            if (typeof assertions === 'string') {
+        // const main = async () => {
+        const app = express();
 
-                // let _annotations: string[] = JSON.parse(annotations);
-                let manifests: string[] = JSON.parse(assertions);
-                // let _attributes: string[] = JSON.parse(attributes);
-                // let _locators: string[] = JSON.parse(locators);
-                // let _operators: string[] = JSON.parse(operators);
+        const assertions = Container.get(AssertionsController);
 
-                new ActionsAutoCompleteProvider()
-                    // .setAnnotations(_annotations)
-                    .setManifests(manifests)
-                    // .setAttributes(_attributes)
-                    // .setLocators(_locators)
-                    // .setOperators(_operators)
-                    .register(context);
+        app.get('/assertions', (req, res) => assertions.getAssertions(req, res));
 
-                console.info('Get-Plugins -Type AssertionMethod = (OK, ' + manifests.length + ')');
-                let message = '$(testing-passed-icon) Total of ' + manifests.length + ' assertion method(s) loaded';
-                vscode.window.setStatusBarMessage(message);
-
-                return manifests;
-            }
+        app.listen(3000, () => {
+            console.log('Server started');
         });
+        // return await client.getAssertions().then((assertions: any) => {
+        if (typeof assertions === 'string') {
+
+            // let _annotations: string[] = JSON.parse(annotations);
+            let manifests: string[] = JSON.parse(assertions);
+            // let _attributes: string[] = JSON.parse(attributes);
+            // let _locators: string[] = JSON.parse(locators);
+            // let _operators: string[] = JSON.parse(operators);
+
+            new ActionsAutoCompleteProvider()
+                // .setAnnotations(_annotations)
+                .setManifests(manifests)
+                // .setAttributes(_attributes)
+                // .setLocators(_locators)
+                // .setOperators(_operators)
+                .register(context);
+
+            console.info('Get-Plugins -Type AssertionMethod = (OK, ' + manifests.length + ')');
+            let message = '$(testing-passed-icon) Total of ' + manifests.length + ' assertion method(s) loaded';
+            vscode.window.setStatusBarMessage(message);
+
+            return manifests;
+        }
+        this.registerAssertions(client, context, annotations).catch(err => {
+            console.error(err);
+        });
+        // });
     }
 
     public async registerMacrosAsync(client: RhinoClient, context: vscode.ExtensionContext): Promise<string[] | undefined> {

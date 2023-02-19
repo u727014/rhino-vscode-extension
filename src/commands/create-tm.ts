@@ -13,7 +13,11 @@ import { Utilities } from "../extensions/utilities";
 import { RhinoClient } from "../framework/rhino-client";
 import { LogMessage } from "../logging/log-models";
 import { ActionsAutoCompleteProvider } from "../providers/actions-auto-complete-provider";
-
+import { RhinoClientSingleton } from "../models/rhino-client-singleton";
+// import AssertionsService from "../../out/models/AssertionsService";
+import { Container, Service } from 'typedi';
+import express = require("express");
+import AssertionsController from "../models/AssertionsController";
 export class CreateTm extends Command {
     // private rhinoClient: RhinoClient;
     // private messagesCache: Map<string, LogMessage> = new Map<string, LogMessage>();
@@ -89,14 +93,15 @@ export class CreateTm extends Command {
         });
     }
     public async getOperatorsMetadata(client: RhinoClient): Promise<string[] | undefined> {
-        return await client.getOperators().then((operators) => {
-            if (typeof operators === 'string') {
-                let _operators: string[] = JSON.parse(operators);
-                let keywordControl = [];
-                keywordControl.push(..._operators.map((i: any) => '\\s+' + i.literal + '\\s+'));
-                return _operators;
-            }
-        });
+        let operators = RhinoClientSingleton.getInstance().getOperators();
+        // return await client.getOperators().then((operators) => {
+        if (typeof operators === 'string') {
+            let _operators: string[] = JSON.parse(operators);
+            let keywordControl = [];
+            keywordControl.push(..._operators.map((i: any) => '\\s+' + i.literal + '\\s+'));
+            return _operators;
+        }
+        // });
     }
 
     public async getVerbsMetadata(client: RhinoClient): Promise<string[] | undefined> {
@@ -110,23 +115,36 @@ export class CreateTm extends Command {
         });
     }
     public async getLocatorsMetadata(client: RhinoClient): Promise<string[] | undefined> {
-        return await client.getLocators().then((locators) => {
-            if (typeof locators === 'string') {
-                let _locators: string[] = JSON.parse(locators);
-                let functions = [];
-                functions.push(..._locators.map((i: any) => '(?<=\\{)' + i.literal + '(?=})'));
-                return _locators;
-            }
-        });
+        let locators = RhinoClientSingleton.getInstance().getLocators();
+        // return await client.getLocators().then((locators) => {
+        if (typeof locators === 'string') {
+            let _locators: string[] = JSON.parse(locators);
+            let functions = [];
+            functions.push(..._locators.map((i: any) => '(?<=\\{)' + i.literal + '(?=})'));
+            return _locators;
+        }
+        // });
     }
     public async getAssertionsMetadata(client: RhinoClient): Promise<string[] | undefined> {
-        return await client.getAssertions().then((assertions) => {
-            if (typeof assertions === 'string') {
-                let _assertions: string[] = JSON.parse(assertions);
-                let functions = [];
-                functions.push(..._assertions.map((i: any) => '(?<=\\{)' + i.literal + '(?=})'));
-                return _assertions;
-            }
+        const app = express();
+
+        const assertions = Container.get(AssertionsController);
+
+        app.get('/assertions', (req, res) => assertions.getAssertions(req, res));
+
+        app.listen(3000, () => {
+            console.log('Server started');
+        });
+        // return await client.getAssertions().then((assertions) => {
+        if (typeof assertions === 'string') {
+            let _assertions: string[] = JSON.parse(assertions);
+            let functions = [];
+            functions.push(..._assertions.map((i: any) => '(?<=\\{)' + i.literal + '(?=})'));
+            return _assertions;
+        }
+        // });
+        this.getAssertionsMetadata(client).catch(err => {
+            console.error(err);
         });
     }
     ///

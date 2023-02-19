@@ -9,3 +9,14 @@ vsc-extension-quickstart.md
 **/.eslintrc.json
 **/*.map
 **/*.ts
+"emitDecoratorMetadata": true,
+"experimentalDecorators": true,
+{
+    "compilerOptions": {
+        "experimentalDecorators": true,
+        "allowJs": true
+    }
+}
+"include": [
+    "app/**/*"
+]

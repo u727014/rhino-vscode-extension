@@ -232,7 +232,7 @@ export class RhinoClient {
     /**
      * Summary. Returns a single available Plugin (both Rhino and Code).
      * 
-     * @param key      The unique identifier by which to find the requested resource.
+     * @param key The unique identifier by which to find the requested resource.
      * use with async-awaiFt
      */
     public async getPlugin(key: string) {
